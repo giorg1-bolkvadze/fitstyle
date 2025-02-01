@@ -1,5 +1,3 @@
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class SignupPage extends StatefulWidget {
@@ -88,7 +86,8 @@ class _SignupPageState extends State<SignupPage> {
                 controller: _ageController,
                 decoration: InputDecoration(
                   labelText: 'Yaş',
-                  prefixIcon: const Icon(Icons.calendar_today, color: Colors.green),
+                  prefixIcon:
+                      const Icon(Icons.calendar_today, color: Colors.green),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
@@ -118,7 +117,8 @@ class _SignupPageState extends State<SignupPage> {
                 controller: _weightController,
                 decoration: InputDecoration(
                   labelText: 'Kilo (kg)',
-                  prefixIcon: const Icon(Icons.monitor_weight, color: Colors.green),
+                  prefixIcon:
+                      const Icon(Icons.monitor_weight, color: Colors.green),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
