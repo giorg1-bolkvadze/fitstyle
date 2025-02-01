@@ -43,7 +43,6 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ),
-
           Center(
             child: Padding(
               padding: const EdgeInsets.all(20.0),

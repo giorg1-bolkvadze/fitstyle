@@ -24,7 +24,7 @@ class _SignupPageState extends State<SignupPage> {
     final height = _heightController.text;
     final weight = _weightController.text;
 
-    print('Email: $email, Password: $password, Age: $age, Height: $height, Weight: $weight');
+    //print('Email: $email, Password: $password, Age: $age, Height: $height, Weight: $weight');
   }
 
   @override
