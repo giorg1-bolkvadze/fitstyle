@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitstyle/services/auth_service.dart';
 import 'package:flutter/material.dart';
 
 class SignupPage extends StatefulWidget {
@@ -14,16 +16,73 @@ class _SignupPageState extends State<SignupPage> {
   final TextEditingController _heightController = TextEditingController();
   final TextEditingController _weightController = TextEditingController();
   bool _passwordVisible = false;
+  final AuthService _authService = AuthService();
 
-  void _register() {
+  void _register() async {
     final email = _emailController.text;
     final password = _passwordController.text;
-    final age = _ageController.text;
-    final height = _heightController.text;
-    final weight = _weightController.text;
+    final age = int.tryParse(_ageController.text) ?? 0;
+    final height = double.tryParse(_heightController.text) ?? 0.0;
+    final weight = double.tryParse(_weightController.text) ?? 0.0;
 
-    print(
-        'Email: $email, Password: $password, Age: $age, Height: $height, Weight: $weight');
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Lütfen email ve şifre giriniz.')),
+      );
+      return;
+    }
+
+    User? user = await _authService.signUp(
+        context, email, password, age, height, weight);
+    if (user != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Kayıt başarılı!')),
+      );
+      Navigator.pop(context); // Kayıt başarılıysa önceki sayfaya dön
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Kayıt başarısız. Lütfen tekrar deneyin.')),
+      );
+    }
+  }
+
+  void register() async {
+    final email = _emailController.text;
+    final password = _passwordController.text;
+    final age = int.tryParse(_ageController.text) ?? 0;
+    final height = double.tryParse(_heightController.text) ?? 0.0;
+    final weight = double.tryParse(_weightController.text) ?? 0.0;
+
+    // Şifre uzunluğunu kontrol et
+    if (password.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Şifre en az 6 karakter olmalıdır.')),
+      );
+      return;
+    }
+
+    // Email ve password boş mu kontrol et
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Lütfen email ve şifre giriniz.')),
+      );
+      return;
+    }
+
+    User? user = await _authService.signUp(
+        context, email, password, age, height, weight);
+    if (user != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Kayıt başarılı!')),
+      );
+      Navigator.pop(context); // Kayıt başarılıysa önceki sayfaya dön
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Kayıt başarısız. Lütfen tekrar deneyin.')),
+      );
+    }
   }
 
   @override

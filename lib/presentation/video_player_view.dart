@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -334,8 +333,6 @@ class _VideoPlayerViewState extends State<VideoPlayerView> {
         return Colors.yellow;
       case PlayerState.cued:
         return Colors.blue[900]!;
-      default:
-        return Colors.blue;
     }
   }
 

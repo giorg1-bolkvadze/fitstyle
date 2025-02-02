@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "824266710641",
+    "project_id": "fitstyle-f34d2",
+    "storage_bucket": "fitstyle-f34d2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:824266710641:android:6ed0d120d511dbb5b785d0",
+        "android_client_info": {
+          "package_name": "com.example.fitstyle"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCUvCSSgTHUzPPLjyxUj184SGL7Lc79FgE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

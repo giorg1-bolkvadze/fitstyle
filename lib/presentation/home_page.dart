@@ -46,7 +46,8 @@ class HomePage extends StatelessWidget {
                 title: "Egzersiz Önerileri",
                 subtitle: "Günlük antrenman önerileri",
                 context: context,
-                onTap: () =>  Navigator.of(context).push(MaterialPageRoute(builder: (context)=>VideoPlayerView())),
+                onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => VideoPlayerView())),
               ),
             ],
           ),

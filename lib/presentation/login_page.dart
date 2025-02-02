@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitstyle/presentation/forgot_password_page.dart';
+import 'package:flutter/material.dart';
 import 'package:fitstyle/presentation/home_page.dart';
 import 'package:fitstyle/presentation/registration_page.dart';
-
-import 'package:flutter/material.dart';
+import 'package:fitstyle/services/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -14,13 +16,72 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _passwordVisible = false;
+  final AuthService _authService = AuthService();
 
-  void _login(BuildContext context) {
+  void _resetPassword(BuildContext context) async {
+    final email = _emailController.text;
+
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Lütfen email adresinizi giriniz.')),
+      );
+      return;
+    }
+
+    try {
+      // Email adresinin kayıtlı olup olmadığını kontrol et
+      final methods =
+          await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
+      if (methods.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Bu email adresi kayıtlı değil.')),
+        );
+        return;
+      }
+
+      await _authService.resetPassword(email);
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Şifre sıfırlama maili gönderildi.')),
+      );
+      // ignore: use_build_context_synchronously
+      Navigator.of(context).pop();
+    } catch (e) {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Hata: $e')),
+      );
+    }
+  }
+
+  void _login(BuildContext context) async {
     final email = _emailController.text;
     final password = _passwordController.text;
-    print('Email: $email, Password: $password');
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => HomePage()));
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Lütfen email ve şifre giriniz.')),
+      );
+      return;
+    }
+
+    User? user = await _authService.signIn(email, password);
+    if (user != null) {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Giriş başarılı!')),
+      );
+      // ignore: use_build_context_synchronously
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    } else {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Giriş başarısız. Lütfen tekrar deneyin.')),
+      );
+    }
   }
 
   void _navigateToSignup() {
@@ -73,7 +134,6 @@ class _LoginPageState extends State<LoginPage> {
                       ],
                     ),
                     const SizedBox(height: 10),
-
                     const Text(
                       "FitStyle",
                       style: TextStyle(
@@ -83,8 +143,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     const SizedBox(height: 20),
-
-// Email TextField
+                    // Email TextField
                     TextField(
                       controller: _emailController,
                       decoration: InputDecoration(
@@ -99,7 +158,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     const SizedBox(height: 16),
-
+                    // Password TextField
                     TextField(
                       controller: _passwordController,
                       decoration: InputDecoration(
@@ -127,7 +186,7 @@ class _LoginPageState extends State<LoginPage> {
                       obscureText: !_passwordVisible,
                     ),
                     const SizedBox(height: 16),
-
+                    // Login Button
                     SizedBox(
                       width: double.infinity,
                       height: 50,
@@ -145,14 +204,19 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ),
-
                     const SizedBox(height: 10),
-
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ForgotPasswordPage()),
+                            );
+                          },
                           child: const Text(
                             "Şifremi Unuttum",
                             style: TextStyle(color: Colors.green),
