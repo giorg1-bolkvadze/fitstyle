@@ -1,9 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitstyle/presentation/forgot_password_page.dart';
+import 'package:fitstyle/presentation/signup_page.dart';
 import 'package:flutter/material.dart';
 import 'package:fitstyle/presentation/home_page.dart';
 import 'package:fitstyle/presentation/registration_page.dart';
 import 'package:fitstyle/services/auth_service.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -17,7 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   bool _passwordVisible = false;
   final AuthService _authService = AuthService();
-
+  bool _isLoading = false;
 
   void _login(BuildContext context) async {
     final email = _emailController.text;
@@ -32,7 +35,6 @@ class _LoginPageState extends State<LoginPage> {
 
     User? user = await _authService.signIn(email, password);
     if (user != null) {
-      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Giriş başarılı!')),
       );
@@ -76,7 +78,7 @@ class _LoginPageState extends State<LoginPage> {
               child: Container(
                 padding: const EdgeInsets.all(25),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.9),
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
@@ -156,18 +158,28 @@ class _LoginPageState extends State<LoginPage> {
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton(
-                        onPressed: () => _login(context),
+                        onPressed: _isLoading
+                            ? null
+                            : () {
+                                HapticFeedback.lightImpact();
+                                _login(context);
+                              },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
+                              borderRadius: BorderRadius.circular(15)),
                         ),
-                        child: const Text(
-                          'Giriş Yap',
-                          style: TextStyle(fontSize: 18, color: Colors.white),
-                        ),
-                      ),
+                        child: _isLoading
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                    color: Colors.white, strokeWidth: 2),
+                              )
+                            : const Text('Giriş Yap',
+                                style: TextStyle(
+                                    fontSize: 18, color: Colors.white)),
+                      ).animate().fade(duration: 700.ms),
                     ),
                     const SizedBox(height: 10),
                     Row(

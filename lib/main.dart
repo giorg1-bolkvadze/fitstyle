@@ -1,11 +1,23 @@
-import 'package:firebase_core/firebase_core.dart';
+// main.dart
+
+import 'package:fitstyle/core/app_colors.dart';
+import 'package:fitstyle/core/app_routes/app_routes.dart';
+import 'package:fitstyle/core/app_translations.dart/app_translations.dart';
+
 import 'package:flutter/material.dart';
-import 'presentation/login_page.dart';
+import 'package:get/get.dart';
+import 'package:firebase_core/firebase_core.dart';
+
+import 'services/auth_controller_getx.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  runApp(MyApp());
+  try {
+    await Firebase.initializeApp();
+    runApp(const MyApp());
+  } catch (e) {
+    debugPrint('Error: $e');
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -13,14 +25,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
+    return GetMaterialApp(
       title: 'FitStyle',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-        useMaterial3: true,
-      ),
-      home: const LoginPage(),
+      theme: AppTheme.lightTheme,
+      themeMode: ThemeMode.system,
+      debugShowCheckedModeBanner: false,
+      defaultTransition: Transition.fade,
+      initialRoute: '/login',
+      getPages: AppRoutes.routes,
+      initialBinding: BindingsBuilder(() {
+        Get.put(AuthController(), permanent: true);
+      }),
+      translations: AppTranslations(),
+      locale: Get.deviceLocale,
+      fallbackLocale: const Locale('tr', 'TR'),
     );
   }
 }

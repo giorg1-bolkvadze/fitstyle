@@ -1,83 +1,60 @@
-import 'package:fitstyle/presentation/video_player_view.dart';
+import 'package:fitstyle/presentation/exercise_page.dart';
+import 'package:fitstyle/presentation/nutrition_page.dart';
+import 'package:fitstyle/presentation/profile_page.dart';
+import 'package:fitstyle/presentation/setting_page.dart';
 import 'package:flutter/material.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int _currentIndex = 0;
+
+  final List<Widget> _pages = [
+    NutritionPage(),
+    ExercisePage(),
+    ProfilePage(),
+    SettingsPage(),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "FitStyle",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
+      body: _pages[_currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.green[600],
-        elevation: 0,
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white70,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.restaurant_menu),
+            label: 'Beslenme',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.fitness_center),
+            label: 'Egzersiz',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profil',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Ayarlar',
+          ),
+        ],
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Colors.green.shade600, Colors.green.shade300],
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}",
-                textAlign: TextAlign.start,
-                style: TextStyle(color: Colors.white, fontSize: 20),
-              ),
-              _buildOptionCard(
-                icon: Icons.restaurant_menu,
-                title: "Beslenme Önerileri",
-                subtitle: "Sağlıklı tarifler ve beslenme ipuçları",
-                context: context,
-              ),
-              const SizedBox(height: 16),
-              _buildOptionCard(
-                icon: Icons.fitness_center,
-                title: "Egzersiz Önerileri",
-                subtitle: "Günlük antrenman önerileri",
-                context: context,
-                onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => VideoPlayerView())),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildOptionCard(
-      {required IconData icon,
-      required String title,
-      required String subtitle,
-      required BuildContext context,
-      void Function()? onTap}) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      elevation: 5,
-      shadowColor: Colors.black45,
-      child: ListTile(
-          leading: CircleAvatar(
-            backgroundColor: Colors.green.shade100,
-            child: Icon(icon, color: Colors.green.shade700),
-          ),
-          title: Text(
-            title,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          subtitle: Text(subtitle, style: const TextStyle(fontSize: 14)),
-          trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey),
-          onTap: onTap),
     );
   }
 }

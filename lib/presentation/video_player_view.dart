@@ -57,7 +57,7 @@ class _VideoPlayerViewState extends State<VideoPlayerView> {
   }
 
   void listener() {
-    if (_isPlayerReady && mounted && !_controller.value.isFullScreen) {
+    if (_isPlayerReady) {
       setState(() {
         _playerState = _controller.value.playerState;
         _videoMetaData = _controller.metadata;

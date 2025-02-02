@@ -6,10 +6,11 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-      // reset password
+  // Şifre sıfırlama
   Future<void> resetPassword(String email) async {
     await _auth.sendPasswordResetEmail(email: email);
   }
+
   // Kullanıcı Kayıt Ol
   Future<User?> signUp(BuildContext context, String email, String password,
       int age, double height, double weight) async {
@@ -18,8 +19,6 @@ class AuthService {
           email: email, password: password);
       User? user = result.user;
 
-
-      // Firestore'a kullanıcı bilgilerini kaydet
       if (user != null) {
         await _firestore.collection('users').doc(user.uid).set({
           'email': email,
@@ -31,14 +30,22 @@ class AuthService {
 
       return user;
     } catch (e) {
-      print(e.toString());
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Kayıt başarısız. Hata: ${e.toString()}')),
-      );
+      debugPrint(e.toString());
+
+      // ScaffoldMessenger kullanırken BuildContext'in geçerli olup olmadığını kontrol et
+      try {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Kayıt başarısız. Hata: ${e.toString()}')),
+        );
+      } catch (error) {
+        debugPrint("BuildContext geçersiz: $error");
+      }
+
       return null;
     }
   }
- 
+
+  // Kullanıcı Giriş Yap
   Future<User?> signIn(String email, String password) async {
     try {
       UserCredential result = await _auth.signInWithEmailAndPassword(
@@ -47,7 +54,7 @@ class AuthService {
       );
       return result.user;
     } catch (e) {
-      print("Giriş hatası: $e");
+      debugPrint("Giriş hatası: $e");
       return null;
     }
   }
