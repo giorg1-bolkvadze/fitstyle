@@ -1,6 +1,7 @@
+import 'package:fitstyle/presentation/home_page.dart';
 import 'package:fitstyle/presentation/registration_page.dart';
-import 'package:flutter/material.dart';
 
+import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -14,12 +15,13 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   bool _passwordVisible = false;
 
-  void _login() {
+  void _login(BuildContext context) {
     final email = _emailController.text;
     final password = _passwordController.text;
     print('Email: $email, Password: $password');
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => HomePage()));
   }
-
 
   void _navigateToSignup() {
     Navigator.push(
@@ -33,7 +35,6 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       body: Stack(
         children: [
-
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -62,17 +63,16 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: const [
                         Icon(Icons.local_dining, size: 50, color: Colors.green),
                         SizedBox(width: 20),
-                        Icon(Icons.directions_run, size: 50, color: Colors.green),
+                        Icon(Icons.directions_run,
+                            size: 50, color: Colors.green),
                       ],
                     ),
                     const SizedBox(height: 10),
-
 
                     const Text(
                       "FitStyle",
@@ -84,12 +84,13 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 20),
 
-                    // Email TextField
+// Email TextField
                     TextField(
                       controller: _emailController,
                       decoration: InputDecoration(
                         labelText: 'Email',
-                        prefixIcon: const Icon(Icons.email, color: Colors.green),
+                        prefixIcon:
+                            const Icon(Icons.email, color: Colors.green),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
@@ -98,7 +99,6 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     const SizedBox(height: 16),
-
 
                     TextField(
                       controller: _passwordController,
@@ -128,12 +128,11 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 16),
 
-
                     SizedBox(
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton(
-                        onPressed: _login,
+                        onPressed: () => _login(context),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
                           shape: RoundedRectangleBorder(
@@ -148,7 +147,6 @@ class _LoginPageState extends State<LoginPage> {
                     ),
 
                     const SizedBox(height: 10),
-
 
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
