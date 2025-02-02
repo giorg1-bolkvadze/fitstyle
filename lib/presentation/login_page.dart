@@ -18,41 +18,6 @@ class _LoginPageState extends State<LoginPage> {
   bool _passwordVisible = false;
   final AuthService _authService = AuthService();
 
-  void _resetPassword(BuildContext context) async {
-    final email = _emailController.text;
-
-    if (email.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Lütfen email adresinizi giriniz.')),
-      );
-      return;
-    }
-
-    try {
-      // Email adresinin kayıtlı olup olmadığını kontrol et
-      final methods =
-          await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
-      if (methods.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Bu email adresi kayıtlı değil.')),
-        );
-        return;
-      }
-
-      await _authService.resetPassword(email);
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Şifre sıfırlama maili gönderildi.')),
-      );
-      // ignore: use_build_context_synchronously
-      Navigator.of(context).pop();
-    } catch (e) {
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Hata: $e')),
-      );
-    }
-  }
 
   void _login(BuildContext context) async {
     final email = _emailController.text;
