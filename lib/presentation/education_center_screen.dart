@@ -1,5 +1,3 @@
-
-
 import 'package:fitstyle/presentation/web_view_page.dart';
 import 'package:fitstyle/sources/local/education_centers_local_data.dart.dart';
 import 'package:flutter/material.dart';

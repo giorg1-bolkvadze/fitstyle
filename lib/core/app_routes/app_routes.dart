@@ -1,4 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitstyle/presentation/education_center/education_center_screen1.dart';
+import 'package:fitstyle/presentation/education_center/test.dart';
 import 'package:fitstyle/presentation/forgot_password_page.dart';
 import 'package:fitstyle/presentation/home_page.dart';
 import 'package:fitstyle/presentation/login_page.dart';
@@ -30,6 +32,30 @@ class AppRoutes {
       page: () => const ForgotPasswordPage(),
       transition: Transition.rightToLeft,
     ),
+    GetPage(
+      name: '/signup',
+      page: () => const SignupPage(),
+      transition: Transition.rightToLeft,
+      middlewares: [AuthMiddleware()],
+    ),
+    GetPage(
+      name: '/forgot-password',
+      page: () => const ForgotPasswordPage(),
+      transition: Transition.rightToLeft,
+      middlewares: [AuthMiddleware()],
+    ),
+    GetPage(
+      name: '/education-center',
+      page: () => const EducationCenterScreen(),
+      transition: Transition.fade,
+      middlewares: [AuthMiddleware()],
+    ),
+    GetPage(
+      name: '/test',
+      page: () => const TestScreen(),
+      transition: Transition.fade,
+      middlewares: [AuthMiddleware()],
+    )
   ];
 }
 

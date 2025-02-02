@@ -1,9 +1,8 @@
-
-
 import 'package:fitstyle/presentation/web_view_page.dart';
 import 'package:fitstyle/sources/local/education_centers_local_data.dart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class EducationCenterScreen extends StatefulWidget {
   const EducationCenterScreen({super.key});
@@ -22,7 +21,7 @@ class _EducationCenterScreenState extends State<EducationCenterScreen> {
         educationCentersFiltered = educationCenters;
       } else {
         educationCentersFiltered = educationCenters.where((center) {
-          final nameLower = center.toString().toLowerCase();
+          final nameLower = center.name.toLowerCase();
           final queryLower = query.toLowerCase();
           return nameLower.contains(queryLower);
         }).toList();
@@ -30,11 +29,24 @@ class _EducationCenterScreenState extends State<EducationCenterScreen> {
     });
   }
 
+  Future<void> _openMap(String query) async {
+    final googleMapsUrl =
+        Uri.parse('https://www.google.com/maps/search/?api=1&query=$query');
+
+    if (await canLaunchUrl(googleMapsUrl)) {
+      await launchUrl(googleMapsUrl);
+    } else {
+      throw 'Google Maps açılamıyor!';
+    }
+  }
+
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
   }
+
+
 
   @override
   Widget build(BuildContext context) {

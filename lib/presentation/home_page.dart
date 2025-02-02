@@ -1,5 +1,6 @@
+import 'package:fitstyle/presentation/education_center/test.dart';
 import 'package:fitstyle/presentation/exercise_page.dart';
-import 'package:fitstyle/presentation/nutrition_page.dart';
+import 'package:fitstyle/presentation/education_center_screen.dart';
 import 'package:fitstyle/presentation/profile_page.dart';
 import 'package:fitstyle/presentation/setting_page.dart';
 import 'package:flutter/material.dart';
@@ -15,8 +16,9 @@ class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = [
-    NutritionPage(),
+    // EducationCenterScreen(),
     ExercisePage(),
+    TestScreen(),
     ProfilePage(),
     SettingsPage(),
   ];
@@ -38,12 +40,12 @@ class _HomePageState extends State<HomePage> {
         unselectedItemColor: Colors.white70,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.restaurant_menu),
-            label: 'Beslenme',
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.fitness_center),
             label: 'Egzersiz',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.school),
+            label: 'Eğitim Merkezi',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
