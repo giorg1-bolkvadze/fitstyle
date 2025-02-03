@@ -2,7 +2,6 @@
 
 import 'package:fitstyle/core/app_colors.dart';
 import 'package:fitstyle/core/app_routes/app_routes.dart';
-import 'package:fitstyle/core/app_translations.dart/app_translations.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -31,10 +30,11 @@ class MyApp extends StatelessWidget {
       defaultTransition: Transition.fade,
       initialRoute: '/login',
       getPages: AppRoutes.routes,
-      initialBinding: BindingsBuilder(() {
-        Get.put(AuthController(), permanent: true);
-      }),
-      translations: AppTranslations(),
+      initialBinding: BindingsBuilder(
+        () {
+          Get.put(AuthController(), permanent: true);
+        },
+      ),
     );
   }
 }

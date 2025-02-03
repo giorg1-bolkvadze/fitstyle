@@ -2,16 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Haritada konumunuzu göstermek için izninize ihtiyacımız var.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Konumunuzu gösterebilmek için izninize ihtiyacımız var.</string>
-	<key>io.flutter.embedded_views_preview</key>
-	<true/>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
-	<key>GMSApiKey</key>
-	<string>AIzaSyBlSbO6g1jecEgANvoFg5nq-QJy3XaGsPw</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
