@@ -1,0 +1,18 @@
+[
+    {
+      "name": "Florence Nightingale Hastanesi",
+      "latitude": 41.077,
+      "longitude": 29.0123,
+      "address": "Şişli, İstanbul",
+      "phone": "+90 212 375 5555"
+    },
+    {
+      "name": "Acıbadem Hastanesi",
+      "latitude": 40.9934,
+      "longitude": 29.1231,
+      "address": "Kadıköy, İstanbul",
+      "phone": "+90 216 456 7890"
+    }
+    
+
+  ]

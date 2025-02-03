@@ -1,127 +1,148 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:get/get.dart';
 
 class ExercisePage extends StatefulWidget {
   const ExercisePage({super.key});
 
   @override
-  State<ExercisePage> createState() => _ExercisePageState();
+  _ExercisePageState createState() => _ExercisePageState();
 }
 
 class _ExercisePageState extends State<ExercisePage> {
-  final List<Map<String, dynamic>> exercises = [
-    {
-      "title": "Kas Gruplarına Göre Egzersizler",
-      "description":
-          "Kas gruplarına göre egzersizler yaparak vücudunuzu şekillendirin.",
-      "icon": Icons.fitness_center,
-      "isSelected": false,
-      "points": 20,
-    },
-    {
-      "title": "Kardiyo Egzersizleri",
-      "description": "Kardiyo egzersizleri yaparak kalbinizi güçlendirin.",
-      "icon": Icons.favorite,
-      "isSelected": false,
-      "points": 20,
-    },
-    {
-      "title": "Yoga",
-      "description": "Yoga yaparak zihninizi ve bedeninizi dinlendirin.",
-      "icon": Icons.self_improvement,
-      "isSelected": false,
-      "points": 15,
-    },
-    {
-      "title": "Günlük 30 Dakika Yürüyüş",
-      "description": "Her gün 30 dakika yürüyüş yaparak formda kalın.",
-      "icon": Icons.directions_walk,
-      "isSelected": false,
-      "points": 15,
-    },
-    {
-      "title": "Evde Antrenman",
-      "description": "Şınav, mekik ve squat gibi hareketleri deneyin.",
-      "icon": Icons.home,
-      "isSelected": false,
-      "points": 15,
-    },
-    {
-      "title": "Esneme Hareketleri",
-      "description": "Kas sağlığınızı korumak için düzenli esneme yapın.",
-      "icon": Icons.accessibility,
-      "isSelected": false,
-      "points": 15,
-    },
+  List<Map<String, dynamic>> _tasks = [
+    {"title": "20 Şınav Çek", "points": 10},
+    {"title": "30 Mekik Çek", "points": 15},
+    {"title": "1 Km Koş", "points": 20},
+    {"title": "10 Dakika İp Atlama", "points": 15},
+    {"title": "15 Dakika Yoga", "points": 10},
+    {"title": "40 Squat Yap", "points": 20},
+    {"title": "20 Burpee Yap", "points": 25},
+    {"title": "10 Dakika Plank", "points": 30},
+    {"title": "5 Km Bisiklet Sür", "points": 25},
+    {"title": "30 Dakika Koş", "points": 35},
+    {"title": "50 Jumping Jack Yap", "points": 15},
+    {"title": "3 Km Tempolu Yürüyüş", "points": 15},
+    {"title": "30 Dakika Dans Et", "points": 20},
+    {"title": "40 Lunge Yap", "points": 20},
+    {"title": "15 Dakika Meditasyon", "points": 10},
+    {"title": "1000 Adım Yürü", "points": 10},
+    {"title": "5 Dakika Soğuma Hareketleri", "points": 5},
+    {"title": "30 Dakika Yüzme", "points": 30},
+    {"title": "10 Dakika Esneme", "points": 10},
+    {"title": "2 Dakika Duvar Oturuşu", "points": 15},
+    {"title": "30 İleri Seviye Şınav", "points": 30},
+    {"title": "30 Dakika Doğa Yürüyüşü", "points": 20},
+    {"title": "50 Kettle Bell Swing", "points": 25},
+    {"title": "20 Dakika Kardiyo", "points": 25},
+    {"title": "15 Dakika Ağırlık Antrenmanı", "points": 30},
+    {"title": "20 Dağ Tırmanışı Hareketi", "points": 15},
+    {"title": "20 Dakika HIIT Antrenmanı", "points": 35},
+    {"title": "10 Dakika Kürek Çekme", "points": 20},
+    {"title": "3 Dakika Superman Hareketi", "points": 10},
+    {"title": "40 Crunch Yap", "points": 15},
+    {"title": "15 Dakika Koşu Bandı", "points": 25},
+    {"title": "1 Dakika Tek Ayak Üzerinde Dur", "points": 10},
+    {"title": "20 Dakika Merdiven Çık", "points": 30},
+    {"title": "1 Dakika Şınav Pozisyonu Bekle", "points": 20},
+    {"title": "10 Dakika Kardiyo Bisiklet", "points": 15},
+    {"title": "50 Medicine Ball Slam", "points": 25},
+    {"title": "50 Bacak Kaldırma", "points": 20},
+    {"title": "20 Arka Lunge Yap", "points": 15},
+    {"title": "20 Dakika Step Aerobik", "points": 20},
+    {"title": "50 Deadlift Yap", "points": 30},
+    {"title": "40 Reverse Crunch", "points": 15},
+    {"title": "20 Dakika Tempolu Dans", "points": 25},
+    {"title": "10 Dakika Bosu Topu Antrenmanı", "points": 15},
+    {"title": "20 Dakika Kettlebell Egzersizi", "points": 30},
+    {"title": "50 Direnç Bandı Çekişi", "points": 20},
+    {"title": "30 Dakika Evde Antrenman", "points": 35},
+    {"title": "5 Dakika Soğuma Hareketleri", "points": 10},
+    {"title": "1 Dakika Tekrar Süpermen Hareketi", "points": 15},
+    {"title": "3 Dakika Kalas (Plank)", "points": 20},
+    {"title": "40 Jack Knife Mekik", "points": 20},
+    {"title": "5 Dakika Nefes Egzersizleri", "points": 10},
   ];
+
+  int _earnedPoints = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPoints();
+  }
+
+  Future<void> _loadPoints() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _earnedPoints = prefs.getInt('earnedPoints') ?? 0;
+    });
+  }
+
+  Future<void> _completeTask(int index) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int taskPoints = _tasks[index]['points'];
+
+    String today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    int todayPoints = prefs.getInt(today) ?? 0;
+    todayPoints += taskPoints;
+
+    setState(() {
+      _earnedPoints += taskPoints;
+      _tasks.removeAt(index);
+    });
+
+    await prefs.setInt('earnedPoints', _earnedPoints);
+    await prefs.setInt(today, todayPoints);
+
+    Get.snackbar(
+      "Görev Tamamlandı 🎉",
+      "$taskPoints puan kazandın!",
+      snackPosition: SnackPosition.TOP,
+      backgroundColor: Colors.green,
+      colorText: Colors.white,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Egzersizler"),
-        backgroundColor: Colors.green[600],
-      ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        itemCount: exercises.length,
-        itemBuilder: (context, index) {
-          final exercise = exercises[index];
-          return _buildExerciseCard(
-            exercise["title"],
-            exercise["description"],
-            exercise["icon"],
-            exercise["isSelected"],
-            exercise["points"],
-            (bool? newValue) {
-              setState(() {
-                exercises[index]["isSelected"] = newValue ?? false;
-              });
-            },
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildExerciseCard(
-    String title,
-    String description,
-    IconData iconData,
-    bool isSelected,
-    int points,
-    ValueChanged<bool?> onChanged,
-  ) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      elevation: 5,
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      child: ListTile(
-        leading: Icon(iconData, color: Colors.green, size: 30),
-        title: Text(
-          title,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: Text(description),
-        trailing: SizedBox(
-          width: 120,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "$points Puan",
-                style: TextStyle(
-                  color: Colors.green[700],
-                  fontWeight: FontWeight.bold,
-                ),
+      appBar: AppBar(title: const Text("Egzersiz Sayfası")),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              "Kazanılan Puan: $_earnedPoints",
+              style: TextStyle(
+                fontSize: 20,
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
               ),
-              Checkbox(
-                value: isSelected,
-                onChanged: onChanged,
-                activeColor: Colors.green,
-              ),
-            ],
+            ),
           ),
-        ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _tasks.length,
+              itemBuilder: (context, index) {
+                return Card(
+                  color: Colors.green,
+                  child: ListTile(
+                    title: Text(_tasks[index]['title']),
+                    subtitle: Text("${_tasks[index]['points']} puan"),
+                    trailing: Checkbox(
+                      value: false,
+                      onChanged: (bool? value) {
+                        _completeTask(index);
+                      },
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

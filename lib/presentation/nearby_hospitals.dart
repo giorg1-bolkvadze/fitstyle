@@ -1,27 +1,27 @@
+import 'package:fitstyle/presentation/hospitals/hospitals_local.dart';
 import 'package:fitstyle/presentation/web_view_page.dart';
-import 'package:fitstyle/sources/local/education_centers_local_data.dart.dart';
-import 'package:flutter/material.dart';
 
+import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class TestScreen extends StatefulWidget {
-  const TestScreen({super.key});
+class NearbyHospitals extends StatefulWidget {
+  const NearbyHospitals({super.key});
 
   @override
-  State<TestScreen> createState() => _EducationCenterScreenState();
+  State<NearbyHospitals> createState() => _NearbyHospitalsScreenState();
 }
 
-class _EducationCenterScreenState extends State<TestScreen> {
+class _NearbyHospitalsScreenState extends State<NearbyHospitals> {
   final TextEditingController _searchController = TextEditingController();
-  List educationCentersFiltered = educationCenters;
+  List hospitalsFiltered = hospitals; // Yeni hastane listesi
 
-  void _filterCenters(String query) {
+  void _filterHospitals(String query) {
     setState(() {
       if (query.isEmpty) {
-        educationCentersFiltered = educationCenters;
+        hospitalsFiltered = hospitals;
       } else {
-        educationCentersFiltered = educationCenters.where((center) {
-          final nameLower = center.name.toLowerCase();
+        hospitalsFiltered = hospitals.where((hospital) {
+          final nameLower = hospital.name.toLowerCase();
           final queryLower = query.toLowerCase();
           return nameLower.contains(queryLower);
         }).toList();
@@ -51,9 +51,12 @@ class _EducationCenterScreenState extends State<TestScreen> {
     return Scaffold(
       appBar: AppBar(
         foregroundColor: Colors.black,
-        title: Text(
-          'Halk Eğitim Merkezleri',
-          style: TextStyle(color: Colors.black, fontStyle: FontStyle.values[1]),
+        title: const Text(
+          'Yakındaki Hastaneler',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
       body: Column(
@@ -62,48 +65,49 @@ class _EducationCenterScreenState extends State<TestScreen> {
             padding: const EdgeInsets.all(10.0),
             child: TextField(
               controller: _searchController,
-              onChanged: _filterCenters,
+              onChanged: _filterHospitals,
               decoration: InputDecoration(
-                hintText: 'Merkez Ara...',
-                prefixIcon: Icon(Icons.search),
+                hintText: 'Hastane Ara...',
+                prefixIcon: const Icon(Icons.search),
                 border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
               ),
             ),
           ),
           Expanded(
               child: ListView.builder(
-            itemCount: educationCentersFiltered.length,
+            itemCount: hospitalsFiltered.length,
             itemBuilder: (context, index) {
-              final educationCenter = educationCentersFiltered[index];
+              final hospital = hospitalsFiltered[index];
               return Card(
-                color: Colors.tealAccent.shade100,
-                margin: EdgeInsets.all(5),
+                color: Colors.green, // Hastaneler için farklı bir renk
+                margin: const EdgeInsets.all(5),
                 child: ListTile(
                   leading: GestureDetector(
                       onTap: () {
-                        _openMap(educationCenter.name);
+                        _openMap(hospital.name);
                       },
-                      child: Icon(Icons.map_outlined, size: 30)),
-                  title: Text(educationCenter.name),
+                      child: const Icon(Icons.local_hospital,
+                          size: 30, color: Colors.red)),
+                  title: Text(hospital.name),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(educationCenter.address),
-                      Text(educationCenter.phone),
+                      Text(hospital.address),
+                      Text(hospital.phone),
                     ],
                   ),
                   trailing: Column(
                     children: [
                       IconButton(
-                        icon: Icon(Icons.link),
+                        icon: const Icon(Icons.link),
                         onPressed: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => WebViewPage(
-                                url: educationCenter.website,
-                                name: educationCenter.name,
+                                url: hospital.website,
+                                name: hospital.name,
                               ),
                             ),
                           );

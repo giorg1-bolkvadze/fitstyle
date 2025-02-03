@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -11,12 +13,14 @@ class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _ProfilePageState createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
   File? _image;
   final picker = ImagePicker();
+  Map<String, int> _dailyPoints = {};
   final FirebaseAuth _auth = FirebaseAuth.instance;
   String _profileImagePath = "";
   String _name = "";
@@ -24,10 +28,82 @@ class _ProfilePageState extends State<ProfilePage> {
   double _height = 0;
   double _weight = 0;
 
+  int _totalPoints = 0;
+
   @override
   void initState() {
     super.initState();
     _loadProfileData();
+    _loadPoints();
+  }
+
+  Future<void> _loadPoints() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _totalPoints = prefs.getInt('earnedPoints') ?? 0;
+
+      _dailyPoints = _getLast7DaysPoints(prefs);
+    });
+  }
+
+  Map<String, int> _getLast7DaysPoints(SharedPreferences prefs) {
+    Map<String, int> points = {};
+    DateTime now = DateTime.now();
+
+    for (int i = 0; i < 7; i++) {
+      String date =
+          DateFormat('yyyy-MM-dd').format(now.subtract(Duration(days: i)));
+      points[date] = prefs.getInt(date) ?? 0;
+    }
+    return points;
+  }
+
+  Widget _buildPointsTable() {
+    return Column(
+      children: _dailyPoints.entries.map((entry) {
+        return Card(
+          child: ListTile(
+            title: Text(
+                DateFormat('EEEE, dd MMMM').format(DateTime.parse(entry.key))),
+            trailing: Text("+${entry.value} puan",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: entry.value > 0 ? Colors.green : Colors.red,
+                )),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildChart() {
+    return SizedBox(
+      height: 200,
+      child: BarChart(
+        BarChartData(
+          barGroups: _dailyPoints.entries.map((entry) {
+            return BarChartGroupData(
+              x: DateTime.parse(entry.key).weekday,
+              barRods: [
+                BarChartRodData(
+                    toY: entry.value.toDouble(), color: Colors.blue, width: 20),
+              ],
+            );
+          }).toList(),
+          titlesData: FlTitlesData(
+            bottomTitles: AxisTitles(
+              sideTitles: SideTitles(
+                  showTitles: true,
+                  getTitlesWidget: (double value, TitleMeta meta) {
+                    return Text(DateFormat('E').format(DateTime.now()
+                        .subtract(Duration(days: 7 - value.toInt()))));
+                  }),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   // 📌 **Profil Fotoğrafını ve Kullanıcı Bilgilerini Lokalden Yükle**
@@ -195,7 +271,7 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: AppBar(
         leading:
             IconButton(icon: const Icon(Icons.edit), onPressed: _editProfile),
-        actionsIconTheme: const IconThemeData(color: Colors.black, size: 30),
+        actionsIconTheme: const IconThemeData(),
         title: const Text("Profil"),
         backgroundColor: Colors.green[600],
         actions: [
@@ -266,6 +342,26 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ).animate().scale(duration: 500.ms),
               ),
+              Text(
+                "Toplam Kazanılan Puanlar: $_totalPoints",
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: _totalPoints > 0
+                      ? Colors.green
+                      : Colors.red, // 📌 RENKLİ PUAN GÖSTERİMİ
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text("Son 7 Günlük Puan Kazanımı",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 10),
+              _buildPointsTable(),
+              const SizedBox(height: 20),
+              Text("Haftalık Puan Grafiği",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 10),
+              _buildChart(),
             ],
           ),
         ),

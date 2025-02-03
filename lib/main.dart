@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
       defaultTransition: Transition.fade,
-      initialRoute: '/home',
+      initialRoute: '/login',
       getPages: AppRoutes.routes,
       initialBinding: BindingsBuilder(() {
         Get.put(AuthController(), permanent: true);

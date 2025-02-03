@@ -3,7 +3,6 @@ import 'package:fitstyle/presentation/forgot_password_page.dart';
 import 'package:fitstyle/presentation/signup_page.dart';
 import 'package:flutter/material.dart';
 import 'package:fitstyle/presentation/home_page.dart';
-import 'package:fitstyle/presentation/registration_page.dart';
 import 'package:fitstyle/services/auth_service.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -20,7 +19,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   bool _passwordVisible = false;
   final AuthService _authService = AuthService();
-  bool _isLoading = false;
+  final bool _isLoading = false;
 
   void _login(BuildContext context) async {
     final email = _emailController.text;

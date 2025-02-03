@@ -1,8 +1,7 @@
-import 'package:fitstyle/presentation/education_center/test.dart';
+import 'package:fitstyle/presentation/education_center/education_centers.dart';
 import 'package:fitstyle/presentation/exercise_page.dart';
-import 'package:fitstyle/presentation/education_center_screen.dart';
 import 'package:fitstyle/presentation/profile_page.dart';
-import 'package:fitstyle/presentation/setting_page.dart';
+import 'package:fitstyle/presentation/nearby_hospitals.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -16,11 +15,10 @@ class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = [
-    // EducationCenterScreen(),
     ExercisePage(),
-    TestScreen(),
+    EducationCenters(),
+    NearbyHospitals(),
     ProfilePage(),
-    SettingsPage(),
   ];
 
   @override
@@ -48,12 +46,12 @@ class _HomePageState extends State<HomePage> {
             label: 'Eğitim Merkezi',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profil',
+            icon: Icon(Icons.local_hospital),
+            label: 'Hastaneler',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Ayarlar',
+            icon: Icon(Icons.person),
+            label: 'Profil',
           ),
         ],
       ),

@@ -32,7 +32,6 @@ class AuthService {
     } catch (e) {
       debugPrint(e.toString());
 
-      // ScaffoldMessenger kullanırken BuildContext'in geçerli olup olmadığını kontrol et
       try {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Kayıt başarısız. Hata: ${e.toString()}')),

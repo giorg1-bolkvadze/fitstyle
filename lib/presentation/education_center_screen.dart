@@ -73,7 +73,7 @@ class _EducationCenterScreenState extends State<EducationCenterScreen> {
               itemBuilder: (context, index) {
                 final educationCenter = educationCentersFiltered[index];
                 return Card(
-                  color: Colors.green.shade100,
+                  color: const Color.fromARGB(255, 8, 231, 19),
                   margin:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   shape: RoundedRectangleBorder(

@@ -100,17 +100,23 @@ class AuthController extends GetxController {
 
   Future<bool> isEmailInUse(String email) async {
     try {
-      final list =
-          await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
-      return list.isNotEmpty;
-    } catch (e) {
-      return false;
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: "dummyPassword", // Geçersiz bir şifre
+      );
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'wrong-password') {
+        return true; // Kullanıcı var ama şifre yanlış
+      } else if (e.code == 'user-not-found') {
+        return false; // Kullanıcı bulunamadı
+      }
     }
+    return false;
   }
 
   Future<void> register() async {
     if (!validateEmail() || !validatePassword() || !validateSignupFields())
-      return   ;
+      return;
 
     try {
       isLoading.value = true;

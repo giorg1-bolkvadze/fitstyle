@@ -17,7 +17,7 @@ class _SignupPageState extends State<SignupPage> {
   final TextEditingController _ageController = TextEditingController();
   final TextEditingController _heightController = TextEditingController();
   final TextEditingController _weightController = TextEditingController();
-  bool _passwordVisible = false;
+  final bool _passwordVisible = false;
   final AuthService _authService = AuthService();
 
   void _register() async {
