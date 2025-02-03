@@ -19,6 +19,7 @@ class AppTranslations extends Translations {
           'login_error': 'Giriş başarısız. Lütfen tekrar deneyin.',
           'signup_success': 'Kayıt başarılı!',
           'signup_error': 'Kayıt başarısız. Lütfen tekrar deneyin.',
+
         },
         'en': {
           'login': 'Login',
@@ -36,6 +37,7 @@ class AppTranslations extends Translations {
           'login_error': 'Login failed. Please try again.',
           'signup_success': 'Registration successful!',
           'signup_error': 'Registration failed. Please try again.',
+          
         },
       };
 }

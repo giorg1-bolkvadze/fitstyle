@@ -19,10 +19,10 @@ class _ProfilePageState extends State<ProfilePage> {
   final picker = ImagePicker();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   String _profileImagePath = "";
-  String _username = "";
+  String _name = "";
   int _age = 0;
-  double _height = 0.0;
-  double _weight = 0.0;
+  double _height = 0;
+  double _weight = 0;
 
   @override
   void initState() {
@@ -30,15 +30,22 @@ class _ProfilePageState extends State<ProfilePage> {
     _loadProfileData();
   }
 
-  // 📌 **Profil Verilerini Lokalden Yükle**
+  // 📌 **Profil Fotoğrafını ve Kullanıcı Bilgilerini Lokalden Yükle**
   Future<void> _loadProfileData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? imagePath = prefs.getString('profileImagePath');
+    String? name = prefs.getString('name');
+    int? age = prefs.getInt('age');
+    double? height = prefs.getDouble('height');
+    double? weight = prefs.getDouble('weight');
+
     setState(() {
-      _profileImagePath = prefs.getString('profileImagePath') ?? "";
-      _username = prefs.getString('username') ?? "Kullanıcı";
-      _age = prefs.getInt('age') ?? 0;
-      _height = prefs.getDouble('height') ?? 0.0;
-      _weight = prefs.getDouble('weight') ?? 0.0;
+      _profileImagePath = imagePath ?? "";
+      _image = imagePath != null ? File(imagePath) : null;
+      _name = name ?? "Kullanıcı";
+      _age = age ?? 0;
+      _height = height ?? 0;
+      _weight = weight ?? 0;
     });
   }
 
@@ -47,12 +54,9 @@ class _ProfilePageState extends State<ProfilePage> {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       File file = File(pickedFile.path);
-
-      // **Cihazdaki özel klasöre kaydet**
       Directory appDir = await getApplicationDocumentsDirectory();
       String filePath = '${appDir.path}/profile_picture.jpg';
       await file.copy(filePath);
-
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('profileImagePath', filePath);
 
@@ -60,41 +64,122 @@ class _ProfilePageState extends State<ProfilePage> {
         _profileImagePath = filePath;
         _image = File(filePath);
       });
-
       Get.snackbar("Başarılı", "Profil fotoğrafı güncellendi!",
           snackPosition: SnackPosition.BOTTOM);
     }
   }
 
-  // 📌 **BMI Hesapla ve Mesaj Göster**
-  void _calculateBMI() {
-    if (_height == 0 || _weight == 0) return;
-
+  void _showMotivationMessage() {
     double bmi = _weight / ((_height / 100) * (_height / 100));
     String message;
 
     if (bmi < 18.5) {
-      message =
-          "Biraz kilo alabilirsin, sağlıklı atıştırmalıkları deneyebilirsin!";
+      message = "Sağlıklı kilo almak için biraz daha beslenmelisin!";
     } else if (bmi < 24.9) {
-      message = "Mükemmel formdasın! Böyle devam et!";
-    } else if (bmi < 29.9) {
-      message = "Hafif bir kilo yönetimiyle harika hissedebilirsin!";
+      message = "Harika! İdeal kilondasin!";
     } else {
-      message = "Önemli olan sağlıklı hissetmek! Günlük hareket etmeyi unutma!";
+      message = "Motivasyonunu kaybetme! Daha sağlıklı bir sen için devam et!";
+    }
+
+    Get.snackbar("Motivasyon Mesajı", message,
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.green,
+        colorText: Colors.white);
+  }
+
+  void _editProfile() {
+    TextEditingController nameController = TextEditingController(text: _name);
+    TextEditingController ageController =
+        TextEditingController(text: _age.toString());
+    TextEditingController heightController =
+        TextEditingController(text: _height.toString());
+    TextEditingController weightController =
+        TextEditingController(text: _weight.toString());
+
+    Get.bottomSheet(
+      Container(
+        padding: const EdgeInsets.all(16.0),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text("Bilgileri Düzenle",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 10),
+            TextField(
+                controller: nameController,
+                decoration: const InputDecoration(labelText: "Ad Soyad")),
+            TextField(
+                controller: ageController,
+                decoration: const InputDecoration(labelText: "Yaş")),
+            TextField(
+                controller: heightController,
+                decoration: const InputDecoration(labelText: "Boy (cm)")),
+            TextField(
+                controller: weightController,
+                decoration: const InputDecoration(labelText: "Kilo (kg)")),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () async {
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                await prefs.setString('name', nameController.text);
+                await prefs.setInt('age', int.parse(ageController.text));
+                await prefs.setDouble(
+                    'height', double.parse(heightController.text));
+                await prefs.setDouble(
+                    'weight', double.parse(weightController.text));
+
+                setState(() {
+                  _name = nameController.text;
+                  _age = int.parse(ageController.text);
+                  _height = double.parse(heightController.text);
+                  _weight = double.parse(weightController.text);
+                });
+
+                if (Get.isBottomSheetOpen ?? false) {
+                  Get.back();
+                }
+
+                _showMotivationMessage();
+              },
+              child: const Text(
+                "Kaydet",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // 📌 **Vücut Kitle Endeksi Hesaplama**
+  void _calculateBMI() {
+    double bmi = _weight / ((_height / 100) * (_height / 100));
+    String message;
+
+    if (bmi < 18.5) {
+      message = "Biraz kilo alabilirsin!";
+    } else if (bmi < 24.9) {
+      message = "İdeal kilodasın!";
+    } else {
+      message = "5 kilo daha verirsen harika olur!";
     }
 
     Get.dialog(
       AlertDialog(
-        title: const Text("Vücut Kitle Endeksin!"),
-        content: Text(message, style: const TextStyle(fontSize: 16)),
+        title: const Text("Vücut Kitle Endeksin"),
+        content: Text(message),
         actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text("Tamam"),
-          )
+          TextButton(onPressed: () => Get.back(), child: const Text("Tamam"))
         ],
-      ).animate().scale(duration: 500.ms),
+      ).animate().fade(duration: 500.ms),
     );
   }
 
@@ -108,6 +193,9 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading:
+            IconButton(icon: const Icon(Icons.edit), onPressed: _editProfile),
+        actionsIconTheme: const IconThemeData(color: Colors.black, size: 30),
         title: const Text("Profil"),
         backgroundColor: Colors.green[600],
         actions: [
@@ -117,51 +205,69 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                GestureDetector(
-                  onTap: _pickImage,
-                  child: CircleAvatar(
-                    radius: 50,
-                    backgroundImage: _profileImagePath.isNotEmpty
-                        ? FileImage(File(_profileImagePath))
-                        : null,
-                    child: _profileImagePath.isEmpty
-                        ? const Icon(Icons.camera_alt, size: 40)
-                        : null,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: _pickImage,
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundImage: _profileImagePath.isNotEmpty
+                          ? FileImage(File(_profileImagePath))
+                          : null,
+                      child: _profileImagePath.isEmpty
+                          ? const Icon(Icons.camera_alt, size: 40)
+                          : null,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 16),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Merhaba, $_username!",
-                        style: const TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 8),
-                    Text("Yaş: $_age | Boy: $_height cm | Kilo: $_weight kg",
-                        style: const TextStyle(fontSize: 16)),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _calculateBMI,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Merhaba, $_name!",
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          "Yaş: $_age | Boy: $_height cm | Kilo: $_weight kg",
+                          style: const TextStyle(
+                            fontSize: 20,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              child: const Text("Vücut Kitle Endeksini Öğren"),
-            ).animate().fade(duration: 500.ms),
-          ],
+              const SizedBox(height: 16),
+              Center(
+                child: ElevatedButton(
+                  onPressed: _calculateBMI,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                  child: const Text(
+                    "Vücut Kitle Endeksini Öğren",
+                    style: TextStyle(fontSize: 18, color: Colors.white),
+                  ),
+                ).animate().scale(duration: 500.ms),
+              ),
+            ],
+          ),
         ),
       ),
     );

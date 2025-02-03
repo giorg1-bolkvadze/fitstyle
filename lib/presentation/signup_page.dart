@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitstyle/services/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -10,6 +11,7 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
@@ -19,40 +21,43 @@ class _SignupPageState extends State<SignupPage> {
   final AuthService _authService = AuthService();
 
   void _register() async {
+    final name = _nameController.text;
     final email = _emailController.text;
     final password = _passwordController.text;
     final age = int.tryParse(_ageController.text) ?? 0;
     final height = double.tryParse(_heightController.text) ?? 0.0;
     final weight = double.tryParse(_weightController.text) ?? 0.0;
 
-    // Şifre uzunluğunu kontrol et
+    if (name.isEmpty || email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Lütfen tüm alanları doldurun.')),
+      );
+      return;
+    }
+
     if (password.length < 6) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Şifre en az 6 karakter olmalıdır.')),
-        );
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Şifre en az 6 karakter olmalıdır.')),
+      );
       return;
     }
 
-    // Email ve password boş mu kontrol et
-    if (email.isEmpty || password.isEmpty) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Lütfen email ve şifre giriniz.')),
-        );
-      }
-      return;
-    }
-
+    // **Kayıt işlemi**
     User? user = await _authService.signUp(
         context, email, password, age, height, weight);
-    if (user != null && mounted) {
+
+    if (user != null) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('name', name);
+      await prefs.setInt('age', age);
+      await prefs.setDouble('height', height);
+      await prefs.setDouble('weight', weight);
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Kayıt başarılı!')),
       );
-      Navigator.pop(context); // Kayıt başarılıysa önceki sayfaya dön
-    } else if (mounted) {
+      Navigator.pop(context);
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content: Text('Kayıt başarısız. Lütfen tekrar deneyin.')),
@@ -72,6 +77,21 @@ class _SignupPageState extends State<SignupPage> {
         child: SingleChildScrollView(
           child: Column(
             children: [
+              // Ad Soyad TextField
+              TextField(
+                controller: _nameController,
+                decoration: InputDecoration(
+                  labelText: 'Ad Soyad',
+                  prefixIcon: const Icon(Icons.person, color: Colors.green),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[200],
+                ),
+              ),
+              const SizedBox(height: 16),
+
               // Email TextField
               TextField(
                 controller: _emailController,
@@ -90,33 +110,20 @@ class _SignupPageState extends State<SignupPage> {
               // Password TextField
               TextField(
                 controller: _passwordController,
+                obscureText: !_passwordVisible,
                 decoration: InputDecoration(
                   labelText: 'Şifre',
                   prefixIcon: const Icon(Icons.lock, color: Colors.green),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _passwordVisible
-                          ? Icons.visibility
-                          : Icons.visibility_off,
-                      color: Colors.green,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _passwordVisible = !_passwordVisible;
-                      });
-                    },
-                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
                   filled: true,
                   fillColor: Colors.grey[200],
                 ),
-                obscureText: !_passwordVisible,
               ),
               const SizedBox(height: 16),
 
-              // Age TextField
+              // Yaş TextField
               TextField(
                 controller: _ageController,
                 decoration: InputDecoration(
@@ -132,7 +139,7 @@ class _SignupPageState extends State<SignupPage> {
               ),
               const SizedBox(height: 16),
 
-              // Height TextField
+              // Boy TextField
               TextField(
                 controller: _heightController,
                 decoration: InputDecoration(
@@ -147,7 +154,7 @@ class _SignupPageState extends State<SignupPage> {
               ),
               const SizedBox(height: 16),
 
-              // Weight TextField
+              // Kilo TextField
               TextField(
                 controller: _weightController,
                 decoration: InputDecoration(
@@ -163,7 +170,7 @@ class _SignupPageState extends State<SignupPage> {
               ),
               const SizedBox(height: 16),
 
-              // Register Button
+              // Kayıt Butonu
               SizedBox(
                 width: double.infinity,
                 height: 50,
